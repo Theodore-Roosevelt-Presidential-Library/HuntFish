@@ -402,6 +402,22 @@ def hunting_units():
     return out
 
 
+TIMEZONES = 'https://services.arcgis.com/xOi1kZaI0eWDREZv/arcgis/rest/services/NTAD_Time_Zones/FeatureServer/0'
+
+
+def time_zones():
+    """Mountain and Central time zone areas (U.S. DOT, National Transportation Atlas Database), so
+    shooting hours print in the clock time actually used at the spot."""
+    log('Time zones (NTAD)')
+    out = []
+    for f in query_all(TIMEZONES, '1=1', 'fid,zone', 0.0005, page=50, order='fid'):
+        zone = ((f.get('properties') or {}).get('zone') or '').strip()
+        polys = clean_polygons(f.get('geometry'), min_area=1e-6, digits=4)
+        if zone in ('Mountain', 'Central') and polys:
+            out.append(feature(polys, {'t': 'tz', 'u': zone}))
+    return out
+
+
 # ---------- fishing ----------
 
 FACILITY_KEEP = {
@@ -621,9 +637,13 @@ def main():
     write('sites.json', fc(sites))
 
     units = hunting_units()
+    tz = time_zones()
+    if len(tz) < 2:
+        raise SystemExit('Time zones did not come back; keeping the previous files.')
+    units += tz
     if not units:
         raise SystemExit('No hunting units; keeping the previous files.')
-    note('units', 'ND Game and Fish, hunting units', len(units))
+    note('units', 'ND Game and Fish, hunting units and counties; U.S. DOT NTAD time zones', len(units))
     write('units.json', fc(units))
 
     waters = fishing_waters()

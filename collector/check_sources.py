@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Watch the regulation pages the guide's hand-entered rules come from (standard library only).
+"""Watch the regulation pages behind the guide's written land rules (standard library only).
 
-docs/data/seasons.json and the land rules in docs/huntfish.js are typed in by hand from the pages
-listed below. This script fetches each page, reduces it to its visible text, and compares a hash
-with collector/source_hashes.json. When a page changes, or the season dates are about to run out,
+Season dates and fish limits are read automatically by collector/seasons.py. The land rules in
+docs/huntfish.js (CLASSES), such as what PLOTS or trust land allows, are written by hand from the
+pages listed below. This script fetches each page, reduces it to its visible text, and compares a hash
+with collector/source_hashes.json. When a page changes,
 it writes sources-changed.md so the workflow can open a GitHub issue for staff to review.
 
 Usage:  python collector/check_sources.py
@@ -15,22 +16,13 @@ import os
 import re
 import sys
 import urllib.request
-from datetime import date
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 HASHES = os.path.join(ROOT, 'collector', 'source_hashes.json')
-SEASONS = os.path.join(ROOT, 'docs', 'data', 'seasons.json')
 REPORT = os.path.join(ROOT, 'sources-changed.md')
 UA = 'TRPL-HuntFish-SourceCheck/1.0 (+https://huntfish.labs.trlibrary.com)'
 
 PAGES = {
-    'Deer proclamation': 'https://gf.nd.gov/regulations/deer',
-    'Small game, waterfowl and furbearer proclamation': 'https://gf.nd.gov/hunting/proclamations/current/small-game',
-    'Pronghorn proclamation': 'https://gf.nd.gov/hunting/proclamations/current/pronghorn',
-    'Elk, moose and bighorn sheep proclamation': 'https://gf.nd.gov/regulations/moose-elk-sheep',
-    'Fall turkey proclamation': 'https://gf.nd.gov/regulations/fall-turkey',
-    'Spring turkey proclamation': 'https://gf.nd.gov/regulations/spring-turkey',
-    'Fishing proclamation': 'https://gf.nd.gov/regulations/fishing',
     'General hunting regulations (posting, stands, bait)': 'https://gf.nd.gov/regulations/hunting-general',
     'Where to hunt (private land rules)': 'https://gf.nd.gov/hunting/where',
     'PLOTS public use rules': 'https://gf.nd.gov/help?term_node_tid_depth=900',
@@ -78,14 +70,10 @@ def main():
         json.dump(new, fh, indent=1, sort_keys=True)
 
     notes = []
-    seasons = json.load(open(SEASONS))
-    left = (date.fromisoformat(seasons['valid_through']) - date.today()).days
-    if left <= 45:
-        notes.append('Season dates in docs/data/seasons.json run out in %d days (%s). Enter the new proclamation dates.' % (left, seasons['valid_through']))
 
     if changed or notes:
         lines = ['A source the hunting and fishing guide relies on has changed. Review it and update '
-                 '`docs/data/seasons.json` or the rules in `docs/huntfish.js` (CLASSES) if needed, then bump `checked` in seasons.json.', '']
+                 'the land rules in `docs/huntfish.js` (CLASSES) if needed.', '']
         for name, url in changed:
             lines.append('- [%s](%s) changed' % (name, url))
         for n in notes:

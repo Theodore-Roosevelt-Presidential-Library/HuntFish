@@ -1,6 +1,6 @@
 # Hunting and Fishing Guide
 
-Tools from the Theodore Roosevelt Presidential Library that help people hunt and fish legally around Medora, North Dakota. Served from GitHub Pages at `huntfish.labs.trlibrary.com`. Land, unit and fishing records are rebuilt weekly by GitHub Actions, and the regulation pages the hand-entered rules come from are watched twice a week.
+Tools from the Theodore Roosevelt Presidential Library that help people hunt and fish legally around Medora, North Dakota. Served from GitHub Pages at `huntfish.labs.trlibrary.com`. Land, unit and fishing records are rebuilt weekly by GitHub Actions, season dates are read from the Game and Fish proclamations every day, and the regulation pages behind the written land rules are watched twice a week.
 
 The country around Medora is a patchwork. The Little Missouri National Grassland, Theodore Roosevelt National Park (closed to hunting), state school trust land, PLOTS walk-in tracts, wildlife management areas and private ranches sit side by side, often with no fence or sign between them, and each has its own rules.
 
@@ -63,13 +63,15 @@ The spot is tested against every land polygon. When layers overlap, the first ma
 | ND Game and Fish, General Information service | Hunting units, counties, license vendors, offices | `collector/build.py` |
 | ND Game and Fish, Fishing Waters service | Waters, facilities, stocking, aquatic nuisance species | `collector/build.py` |
 | ND Game and Fish, Electronically Posted Lands (`GNF_EpostedLandsCached`). **Only the `POSTED` flag is requested, live, for the tapped point; owner names and contacts are never read.** | Posted check and map overlay | Browser |
-| ND Game and Fish proclamations | Season dates, hours, limits (`docs/data/seasons.json`, hand-entered) | People, watched by `collector/check_sources.py` |
+| ND Game and Fish proclamations (deer, pronghorn, elk/moose/sheep, fall and spring turkey, small game and waterfowl, fishing) | Season dates, nonresident restriction dates, goose shooting-hour switch, bag notes, statewide fish limits (`docs/data/seasons.json`) | `collector/seasons.py`, daily |
+| U.S. DOT National Transportation Atlas Database, Time Zones | Mountain or Central clock time for shooting hours at a spot | `collector/build.py` |
 | USGS The National Map | Topo and imagery basemaps | Browser |
 
 ## Upkeep
 
-- **Season dates** live in `docs/data/seasons.json`, typed in from the proclamations. `valid_through` is the last day they cover; after it the page tells people to check Game and Fish instead of showing stale dates. The goose shooting-hour switch date is in `goose_hours`.
-- **Regulation pages changed issue.** `collector/check_sources.py` fingerprints the regulation pages the rules come from. When one changes, or the season dates are within 45 days of running out, the workflow opens a GitHub issue (or comments on the open one). Update `seasons.json` or `CLASSES` in `docs/huntfish.js`, bump `checked`, and check the trlibrary.com page, which repeats some rules.
+- **Season dates are read automatically.** `collector/seasons.py` runs every day, reads the season tables and dated sentences in the current proclamations, and rewrites `docs/data/seasons.json`. When Game and Fish posts next year's proclamations, the new dates appear on their own. Dates without a year in a table take the proclamation's year for August to December and the next year for January to July (the spring turkey page uses its own year). When any date changes, or a season cannot be found on its page, the workflow opens a GitHub issue (or comments on the open one) listing it; a season it cannot find keeps its last good dates. If a page changes shape, adjust its rule in `build()` in `collector/seasons.py`. For a planning date well past a season's close, the page says the next dates are not out yet instead of guessing.
+- **Time zones** come from the federal time zone boundaries, so a spot in the Central part of McKenzie or Dunn County gets Central clock times.
+- **Regulation pages changed issue.** `collector/check_sources.py` fingerprints the pages behind the written land rules (PLOTS, wildlife areas, trust land, posting, grassland shooting rules, CWD, ANS, park firearms). When one changes, the workflow opens a GitHub issue. Update `CLASSES` in `docs/huntfish.js` if needed, and check the trlibrary.com page, which repeats some rules.
 - Each new license year: new deer, small game, pronghorn, elk/moose/sheep, turkey and fishing proclamations. The nonresident restriction dates (`restrictions`) move with the pheasant and deer bow openers.
 - If a source changes shape, the collector stops and keeps the last good files rather than writing empty ones. Run either workflow from the Actions tab by hand.
 
@@ -77,6 +79,7 @@ The spot is tested against every land polygon. When layers overlap, the first ma
 
 ```bash
 python collector/build.py
+python collector/seasons.py
 python collector/check_sources.py
 cd docs && python -m http.server 8000      # preview at http://localhost:8000
 ```

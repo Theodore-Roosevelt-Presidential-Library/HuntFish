@@ -294,9 +294,6 @@
   var PRECEDENCE = ['nps', 'fws', 'park', 'trust', 'wma', 'plots', 'usace', 'usbr', 'blm', 'usfs'];
   var UNIT_LABELS = { deer: 'Deer', elk: 'Elk', pronghorn: 'Pronghorn', sheep: 'Bighorn sheep', fturkey: 'Fall turkey', sturkey: 'Spring turkey', lion: 'Mountain lion zone' };
   var UNIT_ORDER = ['deer', 'elk', 'pronghorn', 'sheep', 'fturkey', 'sturkey', 'lion'];
-  // Counties wholly on Mountain Time; McKenzie and Dunn are split between Mountain and Central.
-  var MOUNTAIN = ['Adams', 'Billings', 'Bowman', 'Golden Valley', 'Hettinger', 'Slope', 'Stark'];
-  var SPLIT_TZ = ['Dunn', 'McKenzie'];
 
   // ---------- brand fonts (same files trlibrary.com uses) ----------
   var FONT_BASE = 'https://www.trlibrary.com/themes/custom/trpl/css/';
@@ -562,11 +559,9 @@
     var s = sunTimes(dateStr, lat, lng), half = 30 * 60000;
     return { start: new Date(s.sunrise - half), sunset: s.sunset, bigEnd: new Date(+s.sunset + half), sunrise: s.sunrise };
   }
-  function tzFor(county) {
-    if (MOUNTAIN.indexOf(county) >= 0) return { tz: 'America/Denver', label: 'Mountain Time' };
-    if (SPLIT_TZ.indexOf(county) >= 0) return { tz: 'America/Denver', label: 'Mountain Time', split: true };
-    if (county) return { tz: 'America/Chicago', label: 'Central Time' };
-    return { tz: 'America/Denver', label: 'Mountain Time' };
+  // The time zone comes from the U.S. DOT time zone boundaries in units.json (t: 'tz').
+  function tzFor(zone) {
+    return zone === 'Central' ? { tz: 'America/Chicago', label: 'Central Time' } : { tz: 'America/Denver', label: 'Mountain Time' };
   }
   // Geese and cranes: 2 p.m. most days, sunset on Wednesdays and Saturdays, and every day late in the season.
   function gooseEnd(dateStr) {
@@ -742,7 +737,7 @@
         checkPosted(lat, lng, postedBox, verdict);
       }
       answer.appendChild(unitsBox(res));
-      answer.appendChild(hoursBox(lat, lng, res.county, state.date));
+      answer.appendChild(hoursBox(lat, lng, res.units.tz, state.date));
       if (cls.fish) answer.appendChild(el('div', { class: 'box' }, [el('b', { class: 'k', text: 'Fishing' }), el('span', { text: res.closedTrust ? 'Closed to all public access.' : cls.fish })]));
       var radius = Math.max(30, Math.min(accuracy || 30, 150));
       var other = nearBoundary(lat, lng, radius, res.cls);
@@ -779,8 +774,8 @@
     return box;
   }
 
-  function hoursBox(lat, lng, county, dateStr) {
-    var h = shootingHours(dateStr, lat, lng), z = tzFor(county);
+  function hoursBox(lat, lng, zone, dateStr) {
+    var h = shootingHours(dateStr, lat, lng), z = tzFor(zone);
     var box = el('div', { class: 'box' }, [el('b', { class: 'k', text: 'Legal shooting hours ' + (dateStr === todayInMedora() ? 'today' : 'on ' + md(dateStr)) })]);
     var ul = el('ul', { class: 'hours' });
     ul.appendChild(el('li', {}, [el('span', { text: 'Shooting starts' }), el('b', { text: clock(h.start, z.tz) })]));
@@ -788,7 +783,7 @@
     ul.appendChild(el('li', {}, [el('span', { text: 'Big game and predators end' }), el('b', { text: clock(h.bigEnd, z.tz) })]));
     ul.appendChild(el('li', {}, [el('span', { text: 'Geese and cranes end' }), el('b', { text: gooseEnd(dateStr) === 'sunset' ? clock(h.sunset, z.tz) : '2 p.m.' })]));
     box.appendChild(ul);
-    box.appendChild(el('small', { style: 'display:block;margin-top:6px;font-family:inherit', text: z.label + (z.split ? '. Part of ' + county + ' County uses Central Time; add an hour there.' : '.') }));
+    box.appendChild(el('small', { style: 'display:block;margin-top:6px;font-family:inherit', text: z.label + ' here.' }));
     return box;
   }
 
@@ -1041,7 +1036,9 @@
     wrap.appendChild(seasonSec);
   }
   function seasonStatus(s, d) {
-    if (s.closed) return { cls: 'b-closed', word: 'No season', rank: 4 };
+    if (s.closed) return state.seasons && d > state.seasons.valid_through ? { cls: 'b-later', word: 'Next dates not out', rank: 2 } : { cls: 'b-closed', word: 'No season', rank: 4 };
+    if (s.missing) return { cls: 'b-later', word: 'Check Game and Fish', rank: 2 };
+    if (s.allyear) return { cls: 'b-open', word: 'Open', rank: 0 };
     if (d >= s.open && d <= s.close) {
       if (s.gap && d >= s.gap[0] && d <= s.gap[1]) return { cls: 'b-soon', word: 'Reopens ' + md(addDays(s.gap[1], 1)), rank: 1 };
       return { cls: 'b-open', word: d === s.open && s.noon ? 'Opens at noon' : 'Open', rank: 0 };
@@ -1050,6 +1047,8 @@
       var n = daysBetween(d, s.open);
       return n <= 14 ? { cls: 'b-soon', word: n === 1 ? 'Opens tomorrow' : 'Opens in ' + n + ' days', rank: 1 } : { cls: 'b-later', word: 'Opens ' + md(s.open), rank: 2 };
     }
+    // Well past the close, the next season's dates are not out yet.
+    if (daysBetween(s.close, d) > 120) return { cls: 'b-later', word: 'Next dates not out', rank: 2 };
     return { cls: 'b-closed', word: 'Closed', rank: 3 };
   }
   function addDays(s, n) { var d = parseYmd(s); d.setDate(d.getDate() + n); return ymd(d); }
@@ -1065,7 +1064,7 @@
 
     if (SHOW.compact) {
       var c = el('div', { class: 'card' }, [el('h4', { text: 'Open today around Medora' })]);
-      if (stale) c.appendChild(el('p', { text: 'New season dates are not loaded yet. Check North Dakota Game and Fish.' }));
+      if (stale) c.appendChild(el('p', { text: 'Game and Fish has not posted the seasons for this date yet.' }));
       else {
         var ul = el('ul');
         openNow.filter(function (s) { return s.group !== 'Fishing'; }).forEach(function (s) { ul.appendChild(el('li', { text: s.name })); });
@@ -1079,7 +1078,7 @@
       return;
     }
 
-    if (stale) seasonBody.appendChild(el('div', { class: 'warn alert', html: 'These dates are from the last set of proclamations, which ran through ' + md(S.valid_through) + '. Check <a href="' + LINKS.regs + '" target="_blank" rel="noopener">North Dakota Game and Fish</a> for current seasons.' }));
+    if (stale) seasonBody.appendChild(el('div', { class: 'warn alert', html: 'Game and Fish has not posted the seasons for this date yet. They appear here on their own once the new <a href="' + LINKS.regs + '" target="_blank" rel="noopener">proclamations</a> are out.' }));
 
     var cards = el('div', { class: 'cards' });
     var hc = el('div', { class: 'card' }, [el('h4', { text: 'Shooting hours in Medora' })]);
@@ -1112,7 +1111,7 @@
         .sort(function (a, b) { return a.st.rank - b.st.rank || (a.s.open || '').localeCompare(b.s.open || ''); })
         .forEach(function (x) {
           var s = x.s, st = x.st;
-          var dates = s.closed ? '' : (s.id === 'fishing' || s.id === 'coyote' ? 'All year' : md(s.open) + (s.noon ? ' (noon CT)' : '') + ' to ' + md(s.close));
+          var dates = (s.closed || s.missing) ? '' : (s.allyear ? 'All year' : md(s.open) + (s.noon ? ' (noon CT)' : '') + ' to ' + md(s.close));
           var row = el('div', { class: 'srow' }, [
             el('div', {}, [el('div', { class: 'nm', text: s.name }), el('div', { class: 'dt', text: [dates, s.license].filter(Boolean).join(' · ') })]),
             el('span', { class: 'badge ' + st.cls, text: st.word })
@@ -1125,7 +1124,7 @@
         });
       seasonBody.appendChild(sec);
     });
-    seasonBody.appendChild(el('p', { class: 'stamp', html: 'Dates from the North Dakota Game and Fish proclamations, checked ' + md(S.checked) + '. Bag limits, units and license rules are in each <a href="' + LINKS.regs + '" target="_blank" rel="noopener">proclamation</a>; it is the final word.' }));
+    seasonBody.appendChild(el('p', { class: 'stamp', html: 'Dates are read from the current North Dakota Game and Fish proclamations every day; last checked ' + md(S.checked) + '. Bag limits, units and license rules are in each <a href="' + LINKS.regs + '" target="_blank" rel="noopener">proclamation</a>; it is the final word.' }));
   }
 
   // --- fishing ---

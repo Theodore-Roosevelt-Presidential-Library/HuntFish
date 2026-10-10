@@ -1,0 +1,41 @@
+name: Read season dates
+
+on:
+  schedule:
+    - cron: '7 13 * * *'   # every day, 13:07 UTC (early morning in Medora)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: seasons
+  cancel-in-progress: false
+
+jobs:
+  read:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Read the proclamations
+        run: python collector/seasons.py
+      - name: Commit
+        run: |
+          git config user.name "huntfish-bot"
+          git config user.email "huntfish-bot@users.noreply.github.com"
+          git add docs/data/seasons.json
+          git diff --cached --quiet || git commit -m "Season dates from ND Game and Fish proclamations"
+          git pull --rebase --quiet || true
+          git push
+      - name: Open an issue when dates changed or a season could not be read
+        if: hashFiles('seasons-report.md') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          title="Season dates changed or need a look"
+          n="$(gh issue list --state open --search "in:title \"$title\"" --json number --jq '.[0].number')"
+          if [ -z "$n" ]; then gh issue create --title "$title" --body-file seasons-report.md; else gh issue comment "$n" --body-file seasons-report.md; fi
