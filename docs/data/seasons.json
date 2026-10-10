@@ -1,0 +1,82 @@
+{
+  "label": "2026-27 seasons",
+  "checked": "2026-10-09",
+  "valid_through": "2027-03-31",
+  "note": "Hand-entered from the North Dakota Game and Fish proclamations. Each spring and summer the Department publishes new proclamations; collector/check_sources.py opens a GitHub issue when a source page changes so these dates can be updated.",
+  "goose_hours": {"sunset_daily_from": "2026-11-29", "note": "Before that date, sunset on Wednesdays and Saturdays, 2 p.m. other days."},
+  "hours": {
+    "big": "Half an hour before sunrise to half an hour after sunset",
+    "small": "Half an hour before sunrise to sunset",
+    "goose": "Half an hour before sunrise to 2 p.m. Through Nov. 28, Wednesdays and Saturdays run to sunset. From Nov. 29, every day runs to sunset."
+  },
+  "seasons": [
+    {"id": "deer-bow", "group": "Big game", "name": "Deer, archery", "open": "2026-09-04", "close": "2027-01-03", "noon": true, "hours": "big",
+     "license": "Over the counter", "note": "Nonresidents may hunt only private land, not PLOTS, through Sept. 13.", "src": "https://gf.nd.gov/regulations/deer"},
+    {"id": "deer-youth", "group": "Big game", "name": "Deer, youth season", "open": "2026-09-18", "close": "2026-09-27", "noon": true, "hours": "big",
+     "license": "Youth license (residents ages 11 to 15)", "note": "", "src": "https://gf.nd.gov/regulations/deer"},
+    {"id": "deer-gun", "group": "Big game", "name": "Deer, gun", "open": "2026-11-06", "close": "2026-11-22", "noon": true, "hours": "big",
+     "license": "Lottery", "note": "Hunt the unit and type of deer on your license. Blaze orange required.", "src": "https://gf.nd.gov/regulations/deer"},
+    {"id": "deer-muzzleloader", "group": "Big game", "name": "Deer, muzzleloader", "open": "2026-11-27", "close": "2026-12-13", "noon": true, "hours": "big",
+     "license": "Lottery", "note": "White-tailed deer only. Blaze orange required.", "src": "https://gf.nd.gov/regulations/deer"},
+    {"id": "pronghorn-bow", "group": "Big game", "name": "Pronghorn, archery", "open": "2026-09-04", "close": "2026-09-27", "noon": true, "hours": "big",
+     "license": "Lottery", "note": "Hunt the unit on your license.", "src": "https://gf.nd.gov/hunting/proclamations/current/pronghorn"},
+    {"id": "pronghorn-gun", "group": "Big game", "name": "Pronghorn, gun", "open": "2026-10-02", "close": "2026-10-18", "noon": true, "hours": "big",
+     "license": "Lottery", "note": "Blaze orange required, bowhunters included.", "src": "https://gf.nd.gov/hunting/proclamations/current/pronghorn"},
+    {"id": "elk-badlands", "group": "Big game", "name": "Elk, units E3 and E4 (Badlands)", "open": "2026-09-04", "close": "2027-01-03", "hours": "big",
+     "license": "Lottery, residents only", "note": "Other elk units nearby have different dates.", "src": "https://gf.nd.gov/regulations/moose-elk-sheep"},
+    {"id": "sheep", "group": "Big game", "name": "Bighorn sheep", "open": "2026-10-30", "close": "2026-12-31", "hours": "big",
+     "license": "Lottery, once in a lifetime", "note": "Early season Oct. 30 to Nov. 13, late season Nov. 14 to Dec. 31.", "src": "https://gf.nd.gov/regulations/moose-elk-sheep"},
+    {"id": "turkey-fall", "group": "Big game", "name": "Turkey, fall", "open": "2026-10-10", "close": "2027-01-03", "hours": "small",
+     "license": "Lottery", "note": "Hunt the unit on your license.", "src": "https://gf.nd.gov/regulations/fall-turkey"},
+    {"id": "turkey-spring", "group": "Big game", "name": "Turkey, spring", "open": "2026-04-11", "close": "2026-05-17", "hours": "small",
+     "license": "Lottery, residents only", "note": "Next spring's dates come with the new spring proclamation.", "src": "https://gf.nd.gov/regulations/spring-turkey"},
+    {"id": "lion-early", "group": "Big game", "name": "Mountain lion, Zone 1 early season", "open": "2026-09-04", "close": "2026-11-22", "hours": "big",
+     "license": "Residents only", "note": "Closes early once eight lions are taken. Report a harvest within 12 hours.", "src": "https://gf.nd.gov/hunting/proclamations/current/small-game"},
+    {"id": "lion-late", "group": "Big game", "name": "Mountain lion, Zone 1 late season", "open": "2026-11-23", "close": "2027-03-31", "hours": "big",
+     "license": "Residents only", "note": "Dogs allowed. Closes early at seven lions or three females.", "src": "https://gf.nd.gov/hunting/proclamations/current/small-game"},
+
+    {"id": "pheasant", "group": "Upland birds", "name": "Pheasant (roosters)", "open": "2026-10-10", "close": "2027-01-03", "hours": "small",
+     "license": "Small game", "note": "Youth weekend Oct. 3 and 4. Nonresidents may not hunt wildlife management areas or PLOTS Oct. 10 to 16.", "src": "https://gf.nd.gov/hunting/proclamations/current/small-game"},
+    {"id": "sharptail", "group": "Upland birds", "name": "Sharp-tailed grouse", "open": "2026-09-12", "close": "2027-01-03", "hours": "small",
+     "license": "Small game", "note": "3 a day, 12 in possession.", "src": "https://gf.nd.gov/hunting/proclamations/current/small-game"},
+    {"id": "hun", "group": "Upland birds", "name": "Hungarian partridge", "open": "2026-09-12", "close": "2027-01-03", "hours": "small",
+     "license": "Small game", "note": "3 a day, 12 in possession.", "src": "https://gf.nd.gov/hunting/proclamations/current/small-game"},
+    {"id": "sage-grouse", "group": "Upland birds", "name": "Sage grouse", "closed": true, "hours": "small",
+     "license": "", "note": "No season this year.", "src": "https://gf.nd.gov/hunting/proclamations/current/small-game"},
+    {"id": "dove", "group": "Upland birds", "name": "Mourning dove", "open": "2026-09-01", "close": "2026-11-29", "hours": "small",
+     "license": "Small game plus HIP registration", "note": "15 a day, Eurasian collared doves included.", "src": "https://gf.nd.gov/hunting/proclamations/current/small-game"},
+
+    {"id": "ducks", "group": "Waterfowl", "name": "Ducks, High Plains unit", "open": "2026-09-26", "close": "2027-01-03", "gap": ["2026-12-07", "2026-12-11"], "hours": "small",
+     "license": "Waterfowl licenses, federal duck stamp (16 and older), HIP", "note": "Split season: closed Dec. 7 to 11. Medora is in the High Plains unit.", "src": "https://gf.nd.gov/hunting/proclamations/current/small-game"},
+    {"id": "geese-canada", "group": "Waterfowl", "name": "Canada geese, Western zone", "open": "2026-09-26", "close": "2026-12-24", "hours": "goose",
+     "license": "Waterfowl licenses, federal duck stamp (16 and older), HIP", "note": "8 a day.", "src": "https://gf.nd.gov/hunting/proclamations/current/small-game"},
+    {"id": "geese-light", "group": "Waterfowl", "name": "Snow and Ross's geese", "open": "2026-09-26", "close": "2027-01-03", "hours": "goose",
+     "license": "Waterfowl licenses, federal duck stamp (16 and older), HIP", "note": "50 a day, no possession limit.", "src": "https://gf.nd.gov/hunting/proclamations/current/small-game"},
+    {"id": "crane", "group": "Waterfowl", "name": "Sandhill crane", "open": "2026-09-19", "close": "2026-11-15", "hours": "goose",
+     "license": "Sandhill crane permit plus small game or waterfowl license, HIP", "note": "3 a day west of U.S. Highway 281.", "src": "https://gf.nd.gov/hunting/proclamations/current/small-game"},
+
+    {"id": "coyote", "group": "Predators and furbearers", "name": "Coyote and fox", "open": "2026-04-01", "close": "2027-03-31", "hours": "big",
+     "license": "Furbearer", "note": "Open all year. Night hunting on foot Nov. 23 to May 31.", "src": "https://gf.nd.gov/hunting/proclamations/current/small-game"},
+    {"id": "bobcat", "group": "Predators and furbearers", "name": "Bobcat, Zone 1", "open": "2026-11-07", "close": "2027-03-15", "hours": "big",
+     "license": "Residents only", "note": "Dogs and cable devices from Nov. 23.", "src": "https://gf.nd.gov/hunting/proclamations/current/small-game"},
+
+    {"id": "fishing", "group": "Fishing", "name": "Hook and line fishing", "open": "2026-04-01", "close": "2027-03-31", "hours": null,
+     "license": "Fishing license, age 16 and older", "note": "Open all year on most waters. National wildlife refuges are closed except areas the refuge opens.", "src": "https://gf.nd.gov/regulations/fishing"}
+  ],
+  "restrictions": [
+    {"from": "2026-10-10", "to": "2026-10-16", "who": "nonresident", "lands": ["wma", "plots"],
+     "text": "Nonresidents may not hunt anything on wildlife management areas or PLOTS from Oct. 10 to 16 (the first week of pheasant season), unless hunting PLOTS land they own."},
+    {"from": "2026-09-04", "to": "2026-09-13", "who": "nonresident", "lands": ["usfs", "trust", "plots", "wma", "blm", "usace", "usbr"],
+     "text": "Nonresident deer bowhunters may hunt only private land, not PLOTS, through Sept. 13."}
+  ],
+  "fish_limits": [
+    ["Walleye, sauger, saugeye (combined)", "5", "10"],
+    ["Northern pike", "5", "10"],
+    ["Largemouth and smallmouth bass (combined)", "5", "10"],
+    ["Trout (combined)", "3", "6"],
+    ["Channel catfish, west of N.D. Highway 1", "20", "40"],
+    ["Crappie", "10", "20"],
+    ["Bluegill", "10", "20"],
+    ["Yellow perch", "20", "40"]
+  ]
+}
