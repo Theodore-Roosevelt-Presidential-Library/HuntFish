@@ -48,6 +48,7 @@ The spot is tested against every land polygon. When layers overlap, the first ma
 | State school trust land | Walk-in hunting and fishing; "Closed" tracts flagged; "Notify the Lessee" tracts flagged | [Trust Lands public access](https://www.land.nd.gov/node/154) |
 | Theodore Roosevelt National Park | No hunting; fishing with a state license | [NPS firearms page](https://www.nps.gov/thro/learn/management/firearms-and-weapons.htm), [NPS fishing](https://www.nps.gov/thro/planyourvisit/fishing.htm) |
 | Lake Ilo NWR | No hunting; fishing in designated areas | [Refuge visitor information](https://www.fws.gov/refuge/lake-ilo/visit-us) |
+| BLM land | Open under state seasons; many parcels are landlocked, so legal access is flagged | [BLM North Dakota Field Office](https://www.blm.gov/office/north-dakota-field-office) |
 | Private land | Open unless posted with signs or electronically; ask first | [Where to hunt](https://gf.nd.gov/hunting/where) |
 
 ## Data
@@ -57,7 +58,8 @@ The spot is tested against every land polygon. When layers overlap, the first ma
 | ND Game and Fish, PLOTS Guide service (PLOTS, WMAs, refuges) | Walk-in and Game and Fish land | `collector/build.py` |
 | USDA Forest Service EDW: Surface Ownership, Forest Boundaries, Recreation Sites | Grassland land, boundary, no-shooting rings | `collector/build.py` |
 | ND Department of Trust Lands, Surface Tracts. **Only tract, legal description and access are requested; lessee names, phones and rents are never read.** | Trust land | `collector/build.py` |
-| USGS PAD-US 4.1 Fee | National park, BLM, state parks, Corps, Reclamation | `collector/build.py` |
+| ND GIS Hub, Bureau of Land Management Surface Lands (`All_GovtLands_Federal/6`, the layer the ND Hunting Atlas shows) | BLM parcels, with acreage | `collector/build.py` |
+| USGS PAD-US 4.1 Fee | National park, state parks, Corps, Reclamation | `collector/build.py` |
 | ND Game and Fish, General Information service | Hunting units, counties, license vendors, offices | `collector/build.py` |
 | ND Game and Fish, Fishing Waters service | Waters, facilities, stocking, aquatic nuisance species | `collector/build.py` |
 | ND Game and Fish, Electronically Posted Lands (`GNF_EpostedLandsCached`). **Only the `POSTED` flag is requested, live, for the tapped point; owner names and contacts are never read.** | Posted check and map overlay | Browser |

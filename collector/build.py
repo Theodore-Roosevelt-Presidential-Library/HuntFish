@@ -283,7 +283,7 @@ def refuge_land():
     return out
 
 
-PADUS_CLASS = {'NPS': 'nps', 'BLM': 'blm', 'SPR': 'park', 'USACE': 'usace', 'USBR': 'usbr'}
+PADUS_CLASS = {'NPS': 'nps', 'SPR': 'park', 'USACE': 'usace', 'USBR': 'usbr'}
 RENAMED = {'Sully Creek State Recreation Area': 'Rough Rider State Park'}
 
 
@@ -301,9 +301,23 @@ def other_public_land():
         cls = PADUS_CLASS.get(p.get('Mang_Name'))
         name = (p.get('Unit_Nm') or '').strip()
         name = RENAMED.get(name, name)
-        if cls == 'blm':
-            name = 'Bureau of Land Management'
         out.append(feature(polys, {'c': cls, 'n': name}))
+    return out
+
+
+FEDERAL = 'https://ndgishub.nd.gov/arcgis/rest/services/All_GovtLands_Federal/MapServer'
+
+
+def blm_land():
+    """BLM surface land, parcel by parcel (ND GIS Hub, the layer the ND Hunting Atlas shows)."""
+    log('Bureau of Land Management surface land (ND GIS Hub)')
+    feats = query_all(FEDERAL + '/6', '1=1', 'OBJECTID,ACRES', 0.00003)
+    out = []
+    for f in feats:
+        p = f.get('properties') or {}
+        polys = clean_polygons(f.get('geometry'))
+        if polys:
+            out.append(feature(polys, {'c': 'blm', 'n': 'Bureau of Land Management', 'ac': round(p.get('ACRES') or 0)}))
     return out
 
 
@@ -591,7 +605,8 @@ def main():
         ('plots', plots_land, 'ND Game and Fish, PLOTS Guide: PLOTS tracts', True),
         ('wma', wma_land, 'ND Game and Fish, PLOTS Guide: Wildlife Management Areas', True),
         ('fws', refuge_land, 'ND Game and Fish, PLOTS Guide: National Wildlife Refuges (fee title)', False),
-        ('padus', other_public_land, 'USGS Protected Areas Database of the U.S. (PAD-US) 4.1, Fee', True),
+        ('blm', blm_land, 'ND GIS Hub, Bureau of Land Management Surface Lands', True),
+        ('padus', other_public_land, 'USGS Protected Areas Database of the U.S. (PAD-US) 4.1, Fee (national park, state parks, Corps, Reclamation)', True),
         ('boundary', grassland_boundary, 'USDA Forest Service, Administrative Forest Boundaries (EDW)', False),
     ):
         feats = fn()

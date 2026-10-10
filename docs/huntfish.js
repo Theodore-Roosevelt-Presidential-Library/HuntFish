@@ -202,7 +202,7 @@
       rules: function () {
         return [
           'Open to hunting under North Dakota seasons and licenses.',
-          'Many BLM parcels here are small and surrounded by private land. Make sure you have legal access; crossing private land takes the owner’s permission.',
+          'Much of the BLM land here is in small, scattered parcels, many surrounded by private land. Make sure you can reach it by public road or section line; crossing private land takes the owner’s permission.',
           'Stay on existing roads and trails.'
         ];
       },
@@ -727,6 +727,7 @@
       var who = cls.who;
       if (res.cls === 'trust' && res.props.l) who += ' · ' + [res.props.q, res.props.l].filter(Boolean).join(' ');
       if (res.cls === 'plots' && res.props.ac) who += ' · ' + res.props.ac + ' walk-in acres';
+      if (res.cls === 'blm' && res.props.ac) who += ' · ' + res.props.ac.toLocaleString() + '-acre parcel';
       if (res.county) who += ' · ' + res.county + ' County';
       answer.appendChild(el('p', { class: 'who', text: who }));
       var ul = el('ul');
@@ -893,7 +894,7 @@
       };
       state.layers.base.topo.addTo(map);
       map.attributionControl.setPrefix(false);
-      map.attributionControl.addAttribution('Land: ND Game and Fish, USDA Forest Service, ND Trust Lands, USGS PAD-US');
+      map.attributionControl.addAttribution('Land: ND Game and Fish, USDA Forest Service, ND Trust Lands, BLM via ND GIS Hub, USGS PAD-US');
       state.layers.lands = L.geoJSON(state.lands, {
         renderer: renderer, interactive: false,
         filter: function (f) { return f.properties.c !== 'boundary'; },
