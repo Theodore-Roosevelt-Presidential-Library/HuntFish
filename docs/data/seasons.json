@@ -1,6 +1,6 @@
 {
  "label": "Season dates",
- "checked": "2026-10-15",
+ "checked": "2026-10-16",
  "valid_through": "2027-03-31",
  "note": "Read automatically from the North Dakota Game and Fish proclamation pages by collector/seasons.py. A season that cannot be found keeps its last good dates and is reported in a GitHub issue.",
  "goose_hours": {
